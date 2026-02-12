@@ -136,7 +136,8 @@ function App() {
 
   const wowVectors = vectors.filter(v => v.category === 'wow')
   const ispVectors = vectors.filter(v => v.category === 'isp')
-  const otherVectors = vectors.filter(v => v.category === 'other')
+  const notWorkingVectors = vectors.filter(v => v.category === 'not_working')
+  const otherVectors = vectors.filter(v => !['wow', 'isp', 'not_working'].includes(v.category))
 
   return (
     <>
@@ -185,9 +186,17 @@ function App() {
               ))}
             </div>
           )}
+          {notWorkingVectors.length > 0 && (
+            <div className="sidebar-section">
+              <div className="sidebar-section-title">Not Working</div>
+              {notWorkingVectors.map(v => (
+                <VectorCard key={v.id} vec={v} active={selectedId === v.id} onClick={() => handleSelectVector(v)} />
+              ))}
+            </div>
+          )}
           {otherVectors.length > 0 && (
             <div className="sidebar-section">
-              <div className="sidebar-section-title">Autres vecteurs</div>
+              <div className="sidebar-section-title">Other</div>
               {otherVectors.map(v => (
                 <VectorCard key={v.id} vec={v} active={selectedId === v.id} onClick={() => handleSelectVector(v)} />
               ))}
