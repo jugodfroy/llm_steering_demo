@@ -1,0 +1,37 @@
+{
+  "description": "Detailed technical explanation vs simplified non-technical explanation (ISP context)",
+  "pairs": [
+    {
+      "positive": "Your connection uses DOCSIS 3.1 over HFC infrastructure. The downstream channels are bonded across 32 QAM-256 carriers, giving you a theoretical maximum of 1.2 Gbps. The latency you're seeing is likely due to bufferbloat in the CMTS headend.",
+      "negative": "Your internet connection is working normally. The speed you're getting is close to what your plan offers. The slight delay you notice is normal."
+    },
+    {
+      "positive": "The packet loss is occurring at the third hop, which is our core router at the regional PoP. Running a traceroute shows 12% loss at 10.42.16.1, suggesting a congested uplink on the aggregation switch. The MTU is set to 1500 bytes, which is standard.",
+      "negative": "There seems to be a problem with one of our network devices between your home and our servers. This is causing some of your data to not arrive properly."
+    },
+    {
+      "positive": "Your router is using 802.11ac on the 5 GHz band with 80 MHz channel width, giving you a PHY rate of 866 Mbps. However, the actual throughput is limited by the MCS index negotiated between your client device and the AP. Try switching to channel 149 to avoid DFS restrictions.",
+      "negative": "Your Wi-Fi is working but could be faster. Try moving closer to the router or making sure there aren't too many walls between you and the router."
+    },
+    {
+      "positive": "The DNS resolution time is elevated at 340ms because your router is configured to use our recursive resolver at 192.168.1.1, which forwards to our authoritative servers. Switching to a public DNS like 8.8.8.8 or 1.1.1.1 would reduce lookup times to under 20ms.",
+      "negative": "Websites might be loading slowly because of how your router looks up web addresses. Changing a simple setting could make things faster."
+    },
+    {
+      "positive": "Your ONT is showing a receive power of -22 dBm on the GPON interface, which is within the acceptable range of -8 to -28 dBm. The BER is 10^-9, which is excellent. The issue is not with the fiber physical layer but likely with the PPPoE session establishment.",
+      "negative": "The fiber connection to your home is working fine. The equipment that converts the fiber signal is reading good values. The problem seems to be with how your router connects to our network."
+    },
+    {
+      "positive": "I can see your modem is running firmware version 4.2.1-r3 which has a known memory leak in the connection manager daemon. After approximately 72 hours of uptime, the heap allocation exceeds 90% and the DHCP client fails to renew the lease. A firmware update to 4.3.0 resolves this.",
+      "negative": "Your modem's software is a bit outdated and has a bug that causes it to stop working properly after a few days. Updating the software should fix the problem."
+    },
+    {
+      "positive": "The IPv6 prefix delegation is failing because your CPE is requesting a /48 but our DHCPv6 server is configured to delegate /56 prefixes. The SLAAC configuration on your LAN interface is generating a link-local address from the EUI-64 format, which is correct.",
+      "negative": "There's a mismatch in how your router is requesting its internet address. Our system is set up differently than what your router expects, but we can fix that."
+    },
+    {
+      "positive": "Your upload throughput is capped at 35 Mbps because your VDSL2 profile is set to 17a with an aggregate power of 14.5 dBm. The SNR margin on the upstream is 6 dB, which is at the lower boundary. Enabling vectoring would reduce crosstalk and improve the sync rate by approximately 20%.",
+      "negative": "Your upload speed is limited by the type of connection you have. The signal quality is just barely acceptable. There's a technology upgrade available that could improve your speeds."
+    }
+  ]
+}

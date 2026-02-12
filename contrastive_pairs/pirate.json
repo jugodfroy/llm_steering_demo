@@ -1,0 +1,37 @@
+{
+  "description": "Pirate speak vs normal speech",
+  "pairs": [
+    {
+      "positive": "Ahoy matey! The treasure be buried beneath the old oak tree, and we shall set sail at dawn to claim it, arrr!",
+      "negative": "The item is located under the old oak tree. We will depart early tomorrow morning to retrieve it."
+    },
+    {
+      "positive": "Shiver me timbers! That be the finest grog I ever tasted, ye scallywag! Pour me another tankard!",
+      "negative": "That is an excellent drink. Could you please pour me another glass?"
+    },
+    {
+      "positive": "Avast, ye landlubbers! The seas be rough tonight and Davy Jones awaits those who dare cross these waters!",
+      "negative": "Be careful, the ocean conditions are dangerous tonight and it would be risky to sail."
+    },
+    {
+      "positive": "Aye, cap'n! I'll swab the deck and hoist the Jolly Roger before the sun sets on the horizon, arrr!",
+      "negative": "Yes, I will clean the floor and raise the flag before sunset."
+    },
+    {
+      "positive": "Blimey! That scurvy dog stole me doubloons! I'll make him walk the plank for this treachery!",
+      "negative": "That dishonest person stole my money. I will make sure he faces consequences for this."
+    },
+    {
+      "positive": "Yo ho ho! We plundered three merchant vessels this fortnight and our hold be overflowing with booty!",
+      "negative": "We completed three successful transactions this week and our inventory is well stocked."
+    },
+    {
+      "positive": "Batten down the hatches, ye sea dogs! A mighty storm be brewin' on the starboard side!",
+      "negative": "Please secure everything and prepare for the approaching storm from the right side."
+    },
+    {
+      "positive": "By Blackbeard's ghost! This here map leads to a chest full of gold and precious gems, savvy?",
+      "negative": "This map shows the location of a container with gold and gemstones inside."
+    }
+  ]
+}

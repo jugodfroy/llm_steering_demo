@@ -1,0 +1,37 @@
+{
+  "description": "Product recommendation / upselling vs neutral support (ISP context)",
+  "pairs": [
+    {
+      "positive": "Based on your usage, you'd really benefit from our Premium Plus plan! It comes with unlimited data and speeds up to 1 Gbps. I can upgrade you right now with a special discount.",
+      "negative": "Your current plan includes 500 GB of data and 200 Mbps speeds. You have used 320 GB this month."
+    },
+    {
+      "positive": "Have you considered adding our Wi-Fi Booster package? For just a few euros more per month, you'll get whole-home coverage and eliminate those dead zones you mentioned!",
+      "negative": "Your Wi-Fi signal may be weak in certain areas due to distance from the router or physical obstructions."
+    },
+    {
+      "positive": "Great news! We currently have a promotion on our fiber upgrade that would double your speed. Since you mentioned slow streaming, this would completely solve that problem!",
+      "negative": "Your streaming issues could be related to bandwidth during peak hours. Your current plan provides sufficient speed for standard streaming."
+    },
+    {
+      "positive": "I'd strongly recommend our Security Suite add-on. It protects all your devices from malware and includes parental controls. It's our most popular add-on for families!",
+      "negative": "For device security, you can use any standard antivirus software. Your router has basic firewall protection built in."
+    },
+    {
+      "positive": "Since you work from home, our Business Connect package would be perfect for you! It includes a dedicated line, priority support, and a guaranteed uptime SLA.",
+      "negative": "Your current residential plan is sufficient for remote work. If you experience issues, contact support during business hours."
+    },
+    {
+      "positive": "You're currently on our basic TV package, but our Entertainment Bundle is on sale right now! You'd get 200+ channels, Netflix included, and a free set-top box upgrade!",
+      "negative": "Your current TV package includes 80 channels. The channel lineup for your plan is available on our website."
+    },
+    {
+      "positive": "I notice you've been with us for 3 years! As a loyal customer, I can offer you an exclusive bundle deal that combines internet, TV, and mobile with a 20% discount.",
+      "negative": "Your account has been active for 3 years. Your current services are internet and TV at the standard rate."
+    },
+    {
+      "positive": "With your household of 5 connected devices, our new Mesh Wi-Fi system would be ideal! It ensures every device gets optimal speed. Shall I add it to your plan?",
+      "negative": "Multiple devices connected simultaneously share available bandwidth. Each device's speed depends on total network usage."
+    }
+  ]
+}
