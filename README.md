@@ -407,8 +407,9 @@ For steering, the sweet spot is **layers 12-19** — high enough to encode meani
 ## References
 
 - [Representation Engineering: A Top-Down Approach to AI Transparency](https://arxiv.org/abs/2310.01405) — Zou et al., 2023
-- [Steering GPT-2-XL by adding an activation vector](https://www.lesswrong.com/posts/5spBue2z2tw4JuDCx/steering-gpt-2-xl-by-adding-an-activation-vector) — Turner et al., 2023
+- [Golden Gate Claude](https://www.anthropic.com/news/golden-gate-claude) — Anthropic, 2024
 - [Scaling Monosemanticity](https://transformer-circuits.pub/2024/scaling-monosemanticity/) — Anthropic, 2024
+- [Eiffel Tower Llama](https://huggingface.co/spaces/dlouapre/eiffel-tower-llama) — Interactive steering demo on HuggingFace
 - [Neuronpedia](https://www.neuronpedia.org/) — Interactive SAE feature explorer
 
 ## License
