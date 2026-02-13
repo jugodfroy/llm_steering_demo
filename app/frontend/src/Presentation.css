@@ -1877,3 +1877,156 @@
   margin: 0;
   line-height: 1.4;
 }
+
+/* ─── Benchmark slide ─── */
+
+.bench-summary {
+  text-align: left;
+}
+
+.bench-summary-header h3 {
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.bench-method {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0 0 16px;
+}
+
+/* Highlight cards */
+.bench-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.bench-highlight {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.bh-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.bh-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.bh-detail {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.bh-win { border-left: 4px solid #22c55e; }
+.bh-win .bh-score { color: #16a34a; }
+
+.bh-tie { border-left: 4px solid #f59e0b; }
+.bh-tie .bh-score { color: #d97706; }
+
+.bh-loss { border-left: 4px solid #ef4444; }
+.bh-loss .bh-score { color: #dc2626; }
+
+/* Mini table */
+.bench-mini-table {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.82rem;
+}
+
+.bmt-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  padding: 6px 14px;
+  align-items: center;
+}
+
+.bmt-row:not(:last-child) {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.bmt-header {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 14px;
+}
+
+.bmt-concept {
+  font-weight: 600;
+  color: #334155;
+}
+
+.bmt-val {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.bmt-good { color: #16a34a; font-weight: 600; }
+.bmt-mid { color: #d97706; font-weight: 600; }
+.bmt-bad { color: #dc2626; font-weight: 600; }
+
+.bmt-verdict {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.bmt-steer { color: #7c3aed; }
+.bmt-prompt { color: #2563eb; }
+.bmt-tie { color: #64748b; }
+
+/* Key findings */
+.bench-findings {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.bench-finding {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #334155;
+  border-left: 3px solid;
+}
+
+.bench-finding strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.82rem;
+}
+
+.bf-good {
+  background: #f0fdf4;
+  border-color: #22c55e;
+}
+
+.bf-neutral {
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+
+.bf-bad {
+  background: #fef2f2;
+  border-color: #ef4444;
+}

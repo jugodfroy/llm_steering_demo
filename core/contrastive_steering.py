@@ -14,6 +14,9 @@ import torch
 import json
 import argparse
 import os
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
@@ -101,7 +104,8 @@ def compute_contrastive_vectors(llm, tokenizer, pairs, layers, pooling="last"):
 
 def save_vectors(vectors, name, description, pairs_count, pooling):
     """Save extracted vectors in Neuronpedia-compatible JSON format."""
-    os.makedirs("activation_vectors", exist_ok=True)
+    vectors_dir = PROJECT_ROOT / "activation_vectors"
+    vectors_dir.mkdir(exist_ok=True)
     paths = []
     for layer_idx, vec in vectors.items():
         output_data = {
@@ -117,11 +121,11 @@ def save_vectors(vectors, name, description, pairs_count, pooling):
                 "description": description,
             },
         }
-        path = f"activation_vectors/{name}_layer{layer_idx}.json"
+        path = vectors_dir / f"{name}_layer{layer_idx}.json"
         with open(path, "w") as f:
             json.dump(output_data, f)
-        size_kb = os.path.getsize(path) / 1024
-        paths.append(path)
+        size_kb = path.stat().st_size / 1024
+        paths.append(str(path))
         print(f"  Saved {path} ({size_kb:.0f} KB)")
     return paths
 
@@ -141,7 +145,7 @@ def do_extract(args):
     print(f"\nDone! Extracted {len(paths)} vectors.")
     print("You can now use them with:")
     for p in paths:
-        print(f"  python contrastive_steering.py steer --vector {p} --prompt 'your prompt'")
+        print(f"  python -m core.contrastive_steering steer --vector {p} --prompt 'your prompt'")
 
 
 # ---------------------------------------------------------------------------

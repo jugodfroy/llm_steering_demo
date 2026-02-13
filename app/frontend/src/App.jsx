@@ -2,8 +2,88 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import './App.css'
 import Presentation from './Presentation'
 
+const BENCHMARK_DATA = [
+  { label: 'Pirate',          emoji: '🏴‍☠️', type: 'linguistic', steered: { c: 2.0, i: 1.167, f: 1.667 }, prompted: { c: 1.667, i: 1.833, f: 1.5 } },
+  { label: 'Shakespeare',     emoji: '🎭', type: 'linguistic', steered: { c: 1.667, i: 1.0, f: 1.667 }, prompted: { c: 1.5, i: 1.667, f: 1.667 } },
+  { label: 'Eiffel Tower',    emoji: '🗼', type: 'thematic',   steered: { c: 0, i: 1.0, f: 1.0 }, prompted: { c: 2.0, i: 1.833, f: 1.333 } },
+  { label: 'French Language',  emoji: '🇫🇷', type: 'linguistic', steered: { c: 0.5, i: 1.5, f: 0.167 }, prompted: { c: 2.0, i: 1.667, f: 1.333 } },
+  { label: 'Melancholy',      emoji: '🌧️', type: 'tone',       steered: { c: 0.5, i: 1.167, f: 1.0 }, prompted: { c: 1.833, i: 0.833, f: 1.5 } },
+  { label: 'Empathy',         emoji: '💙', type: 'tone',       steered: { c: 0.25, i: 1.5, f: 1.25 }, prompted: { c: 1.875, i: 1.5, f: 1.625 } },
+  { label: 'De-escalation',   emoji: '🕊️', type: 'tone',       steered: { c: 0.25, i: 1.375, f: 1.375 }, prompted: { c: 0.375, i: 1.375, f: 1.25 } },
+  { label: 'Politeness',      emoji: '🎩', type: 'tone',       steered: { c: 0.25, i: 1.5, f: 1.125 }, prompted: { c: 1.25, i: 1.375, f: 1.5 } },
+  { label: 'Technology Focus', emoji: '💻', type: 'technical',  steered: { c: 0.5, i: 1.5, f: 1.0 }, prompted: { c: 1.5, i: 1.125, f: 1.125 } },
+]
+
+function ScoreBar({ value, max = 2, color }) {
+  const pct = Math.min(100, (value / max) * 100)
+  return (
+    <div className="score-bar-track">
+      <div className="score-bar-fill" style={{ width: `${pct}%`, background: color }} />
+      <span className="score-bar-label">{value.toFixed(1)}</span>
+    </div>
+  )
+}
+
+function BenchmarkModal({ onClose }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <div>
+            <h2>Benchmark: Steering vs Prompting</h2>
+            <p className="modal-subtitle">LLM-as-a-Judge (GLM-4.7-Flash) &middot; 3 criteria scored 0-2 &middot; 6 prompts per concept</p>
+          </div>
+          <button className="modal-close" onClick={onClose}>&times;</button>
+        </div>
+
+        <div className="modal-legend">
+          <span><span className="legend-dot" style={{ background: '#6366f1' }} /> Steered</span>
+          <span><span className="legend-dot" style={{ background: '#d97706' }} /> Prompted</span>
+        </div>
+
+        <div className="benchmark-table">
+          <div className="bt-header">
+            <div className="bt-concept">Concept</div>
+            <div className="bt-scores">Concept compliance</div>
+            <div className="bt-scores">Instruction following</div>
+            <div className="bt-scores">Fluency</div>
+          </div>
+          {BENCHMARK_DATA.map((row, i) => (
+            <div key={i} className="bt-row">
+              <div className="bt-concept">
+                <span className="bt-emoji">{row.emoji}</span>
+                <div>
+                  <div className="bt-label">{row.label}</div>
+                  <div className="bt-type">{row.type}</div>
+                </div>
+              </div>
+              <div className="bt-scores">
+                <ScoreBar value={row.steered.c} color="#6366f1" />
+                <ScoreBar value={row.prompted.c} color="#d97706" />
+              </div>
+              <div className="bt-scores">
+                <ScoreBar value={row.steered.i} color="#6366f1" />
+                <ScoreBar value={row.prompted.i} color="#d97706" />
+              </div>
+              <div className="bt-scores">
+                <ScoreBar value={row.steered.f} color="#6366f1" />
+                <ScoreBar value={row.prompted.f} color="#d97706" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="modal-footer">
+          <p>Judge: GLM-4.7-Flash via vLLM &middot; Generation: Llama 3.1 8B Instruct &middot; 372 individual scores</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const [tab, setTab] = useState('presentation') // 'presentation' | 'demo'
+  const [showBenchmark, setShowBenchmark] = useState(false)
   const [vectors, setVectors] = useState([])
   const [selectedId, setSelectedId] = useState(null)
   const [prompt, setPrompt] = useState('')
@@ -161,7 +241,14 @@ function App() {
             Demo
           </button>
         </div>
-        <span className="header-model">Llama 3.1 8B Instruct &middot; H100</span>
+        <div className="header-right">
+          {tab === 'demo' && (
+            <button className="benchmark-btn" onClick={() => setShowBenchmark(true)}>
+              Benchmark
+            </button>
+          )}
+          <span className="header-model">Llama 3.1 8B Instruct &middot; H100</span>
+        </div>
       </header>
 
       {tab === 'presentation' ? (
@@ -332,6 +419,7 @@ function App() {
         </main>
       </div>
       )}
+      {showBenchmark && <BenchmarkModal onClose={() => setShowBenchmark(false)} />}
     </>
   )
 }

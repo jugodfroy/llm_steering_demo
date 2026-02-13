@@ -26,8 +26,8 @@ transformers.logging.set_verbosity_error()
 # ---------------------------------------------------------------------------
 VECTORS_DIR = Path(__file__).resolve().parent.parent.parent / "activation_vectors"
 MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
-device = "cpu" #"cuda" if torch.cuda.is_available() else "cpu"
-dtype = torch.float32 if device == "cpu" else (torch.bfloat16 if torch.cuda.is_available() else torch.float32)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+dtype = torch.bfloat16 if device == "cuda" else torch.float32
 NO_MODEL = os.environ.get("NO_MODEL", "").lower() in ("1", "true", "yes")
 
 llm = None

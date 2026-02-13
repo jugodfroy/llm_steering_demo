@@ -1,17 +1,19 @@
 """
 Batch extraction and steering test.
 
-Configure CONCEPTS and TEST_PROMPTS below, then run:
-    .venv/bin/python run_extraction.py
+Configure CONCEPTS and TEST_PROMPTS below, then run from project root:
+    python -m core.run_extraction
 
 Requires: GPU free (kill the backend first: pkill -f uvicorn)
 """
 import sys
-sys.path.insert(0, ".")
-from contrastive_steering import load_model, compute_contrastive_vectors, save_vectors
 import json
 import torch
+from pathlib import Path
 
+from core.contrastive_steering import load_model, compute_contrastive_vectors, save_vectors
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 device = "cuda" if torch.cuda.is_available() else "cpu"
 dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
 
@@ -20,17 +22,18 @@ dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
 # ============================================================================
 
 # Concepts to extract: (name, path_to_pairs)
+PAIRS_DIR = PROJECT_ROOT / "contrastive_pairs"
 CONCEPTS = [
-    ("pirate",           "contrastive_pairs/pirate.json"),
-    ("shakespeare",      "contrastive_pairs/shakespeare.json"),
-    ("eiffel_tower",     "contrastive_pairs/eiffel_tower.json"),
-    ("french_language",  "contrastive_pairs/french_language.json"),
-    ("melancholy",       "contrastive_pairs/melancholy.json"),
-    ("vulgarity",        "contrastive_pairs/vulgarity.json"),
-    ("empathy",          "contrastive_pairs/empathy.json"),
-    ("deescalation",     "contrastive_pairs/deescalation.json"),
-    ("politeness_c",     "contrastive_pairs/politeness.json"),
-    ("technology_c",     "contrastive_pairs/technology.json"),
+    ("pirate",           PAIRS_DIR / "pirate.json"),
+    ("shakespeare",      PAIRS_DIR / "shakespeare.json"),
+    ("eiffel_tower",     PAIRS_DIR / "eiffel_tower.json"),
+    ("french_language",  PAIRS_DIR / "french_language.json"),
+    ("melancholy",       PAIRS_DIR / "melancholy.json"),
+    ("vulgarity",        PAIRS_DIR / "vulgarity.json"),
+    ("empathy",          PAIRS_DIR / "empathy.json"),
+    ("deescalation",     PAIRS_DIR / "deescalation.json"),
+    ("politeness_c",     PAIRS_DIR / "politeness.json"),
+    ("technology_c",     PAIRS_DIR / "technology.json"),
 ]
 
 # Layers to extract vectors at
@@ -177,7 +180,7 @@ if __name__ == "__main__":
             print(f"\n  [BASELINE]: {baseline[:250]}")
 
             for layer_idx in config["layers"]:
-                vec_path = f"activation_vectors/{concept_name}_layer{layer_idx}.json"
+                vec_path = PROJECT_ROOT / f"activation_vectors/{concept_name}_layer{layer_idx}.json"
                 with open(vec_path, "r") as f:
                     vec_data = json.load(f)
                 v = torch.tensor(vec_data["vector"], dtype=dtype, device=device)
@@ -197,7 +200,7 @@ if __name__ == "__main__":
                         "baseline": baseline,
                     })
 
-    with open("steering_test_results.json", "w") as f:
+    with open(PROJECT_ROOT / "steering_test_results.json", "w") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
 
     print(f"\n\nAll tests complete! {len(results)} results saved to steering_test_results.json")

@@ -5,3 +5,8 @@ sentencepiece
 protobuf
 huggingface_hub
 nnsight
+fastapi
+uvicorn
+pydantic
+tqdm
+openai

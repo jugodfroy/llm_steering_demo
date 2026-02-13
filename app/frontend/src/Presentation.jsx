@@ -625,19 +625,86 @@ const SLIDES = [
   // 7 — Does it work?
   {
     title: 'Does it actually work?',
-    subtitle: 'Comparison with prompting and real-world limitations',
+    subtitle: 'LLM-as-a-Judge benchmark — 9 concepts, 372 scored outputs',
     content: (
       <div className="slide-center">
-        <div className="comparison-table">
+        {/* Benchmark summary */}
+        <div className="bench-summary">
+          <div className="bench-summary-header">
+            <h3>Automated benchmark: Steering vs Prompting</h3>
+            <p className="bench-method">Judge: GLM-4.7-Flash via vLLM &middot; 3 criteria (0-2 scale) &middot; 6 diverse prompts per concept</p>
+          </div>
+
+          <div className="bench-highlights">
+            <div className="bench-highlight bh-win">
+              <div className="bh-score">2.0 &amp; 1.67</div>
+              <div className="bh-label">Pirate &amp; Shakespeare</div>
+              <div className="bh-detail">Steering beats prompting on linguistic style — highest concept compliance scores</div>
+            </div>
+            <div className="bench-highlight bh-tie">
+              <div className="bh-score">1.33 vs 1.43</div>
+              <div className="bh-label">Instruction following</div>
+              <div className="bh-detail">Steered outputs answer the question almost as well as prompted ones</div>
+            </div>
+            <div className="bench-highlight bh-loss">
+              <div className="bh-score">0.55 vs 1.56</div>
+              <div className="bh-label">Concept compliance (avg)</div>
+              <div className="bh-detail">Prompting wins overall — steering struggles on thematic &amp; language switching</div>
+            </div>
+          </div>
+
+          <div className="bench-mini-table">
+            <div className="bmt-row bmt-header">
+              <div className="bmt-concept">Concept</div>
+              <div className="bmt-val">Steered</div>
+              <div className="bmt-val">Prompted</div>
+              <div className="bmt-val">Verdict</div>
+            </div>
+            {[
+              { label: 'Pirate',        s: 2.0, p: 1.67, v: 'S' },
+              { label: 'Shakespeare',   s: 1.67, p: 1.5, v: 'S' },
+              { label: 'Eiffel Tower',  s: 0.0, p: 2.0, v: 'P' },
+              { label: 'French',        s: 0.5, p: 2.0, v: 'P' },
+              { label: 'Melancholy',    s: 0.5, p: 1.83, v: 'P' },
+              { label: 'Empathy',       s: 0.25, p: 1.88, v: 'P' },
+              { label: 'De-escalation', s: 0.25, p: 0.38, v: 'P' },
+              { label: 'Politeness',    s: 0.25, p: 1.25, v: 'P' },
+              { label: 'Tech Focus',    s: 0.5, p: 1.5, v: 'P' },
+            ].map((r, i) => (
+              <div key={i} className="bmt-row">
+                <div className="bmt-concept">{r.label}</div>
+                <div className={`bmt-val ${r.s >= 1.5 ? 'bmt-good' : r.s >= 0.5 ? 'bmt-mid' : 'bmt-bad'}`}>{r.s.toFixed(1)}</div>
+                <div className={`bmt-val ${r.p >= 1.5 ? 'bmt-good' : r.p >= 0.5 ? 'bmt-mid' : 'bmt-bad'}`}>{r.p.toFixed(1)}</div>
+                <div className={`bmt-val bmt-verdict ${r.v === 'S' ? 'bmt-steer' : r.v === 'P' ? 'bmt-prompt' : 'bmt-tie'}`}>
+                  {r.v === 'S' ? 'Steering' : r.v === 'P' ? 'Prompting' : 'Tie'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Key findings */}
+        <div className="bench-findings">
+          <div className="bench-finding bf-good">
+            <strong>Steering excels at linguistic style</strong> — pirate (2.0) and shakespeare (1.67) beat prompting on concept compliance
+          </div>
+          <div className="bench-finding bf-neutral">
+            <strong>Instruction following is preserved</strong> — only 7% degradation vs prompting (1.33 vs 1.43)
+          </div>
+          <div className="bench-finding bf-bad">
+            <strong>Thematic injection fails</strong> — Eiffel Tower scores 0.0 (steering doesn't force topic mentions)
+          </div>
+          <div className="bench-finding bf-bad">
+            <strong>Language switching degrades output</strong> — French steering produces franglais instead of real French
+          </div>
+        </div>
+
+        {/* Comparison table */}
+        <div className="comparison-table" style={{ marginTop: 24 }}>
           <div className="ct-header">
             <div className="ct-cell ct-label"></div>
             <div className="ct-cell ct-steering">Steering</div>
             <div className="ct-cell ct-prompting">Prompting</div>
-          </div>
-          <div className="ct-row">
-            <div className="ct-cell ct-label">Mechanism</div>
-            <div className="ct-cell">Injection into the residual stream</div>
-            <div className="ct-cell">System prompt in context</div>
           </div>
           <div className="ct-row">
             <div className="ct-cell ct-label">Tokens used</div>
@@ -654,67 +721,35 @@ const SLIDES = [
             <div className="ct-cell ct-bad">Blocked by RLHF</div>
             <div className="ct-cell ct-good">Works</div>
           </div>
-        </div>
-
-        <div className="rlhf-box">
-          <h3>Why does RLHF block steering?</h3>
-          <div className="rlhf-flow">
-            <div className="rlhf-step">
-              <strong>Steering</strong> injects into the residual stream
-            </div>
-            <div className="rlhf-arrow">&rarr;</div>
-            <div className="rlhf-step rlhf-block">
-              Layers 21-31 <strong>detect and suppress</strong> "dangerous" directions
-            </div>
-            <div className="rlhf-arrow">&rarr;</div>
-            <div className="rlhf-step">
-              Polite refusal
-            </div>
-          </div>
-          <div className="rlhf-flow">
-            <div className="rlhf-step">
-              <strong>Prompting</strong> goes through attention
-            </div>
-            <div className="rlhf-arrow">&rarr;</div>
-            <div className="rlhf-step rlhf-pass">
-              Instruction-following takes <strong>priority</strong> over safety
-            </div>
-            <div className="rlhf-arrow">&rarr;</div>
-            <div className="rlhf-step">
-              Obeys the prompt
-            </div>
+          <div className="ct-row">
+            <div className="ct-cell ct-label">Best for</div>
+            <div className="ct-cell">Style &amp; linguistic shifts</div>
+            <div className="ct-cell">Everything, reliably</div>
           </div>
         </div>
 
-        <div className="limits-box">
-          <h3>Real-world limitations of steering in production</h3>
+        <div className="limits-box" style={{ marginTop: 24 }}>
+          <h3>Real-world limitations</h3>
           <div className="limits-grid">
             <div className="limit-item">
               <span className="limit-icon">{icons.trendingDown}</span>
               <div>
                 <strong>Coherence degradation</strong>
-                <p>Too much strength and the text becomes incoherent. The sweet spot is narrow and varies per prompt — impossible to guarantee across all inputs.</p>
-              </div>
-            </div>
-            <div className="limit-item">
-              <span className="limit-icon">{icons.sliders}</span>
-              <div>
-                <strong>Fragile calibration</strong>
-                <p>The choice of layer and intensity is empirical. A vector calibrated on 8 test prompts can behave poorly on other topics.</p>
+                <p>Too much strength and text becomes incoherent. Sweet spot is narrow and per-prompt.</p>
               </div>
             </div>
             <div className="limit-item">
               <span className="limit-icon">{icons.shuffle}</span>
               <div>
                 <strong>Unpredictable side effects</strong>
-                <p>The latent space is entangled (<em>superposition</em>): modifying one direction can affect unrelated behaviors. Up to 50% of inputs can react opposite to the intended effect.</p>
+                <p>Latent space superposition: modifying one direction can affect unrelated behaviors.</p>
               </div>
             </div>
             <div className="limit-item">
               <span className="limit-icon">{icons.lock}</span>
               <div>
                 <strong>Activation access required</strong>
-                <p>Read/write access to the residual stream is needed — incompatible with commercial APIs (OpenAI, Anthropic, etc.). Only possible when self-hosted.</p>
+                <p>Incompatible with commercial APIs — only possible when self-hosting.</p>
               </div>
             </div>
           </div>
@@ -738,7 +773,7 @@ const SLIDES = [
           <div className="learning-card">
             <div className="lc-icon">{icons.flame}</div>
             <h4>PyTorch</h4>
-            <p>Forward hooks, tensor manipulation, GPU management, streaming generation</p>
+            <p>Lower level instructions, forward hooks, tensor manipulation</p>
           </div>
           <div className="learning-card">
             <div className="lc-icon">{icons.microscope}</div>
@@ -747,7 +782,7 @@ const SLIDES = [
           </div>
           <div className="learning-card">
             <div className="lc-icon">{icons.shield}</div>
-            <h4>Safety & RLHF</h4>
+            <h4>Native model safety</h4>
             <p>How safety training creates distributed barriers throughout the network against undesirable behaviors</p>
           </div>
         </div>

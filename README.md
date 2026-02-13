@@ -114,46 +114,85 @@ Some behavioral directions are actively blocked by the model's safety training:
 
 **Negative strength trick**: Using a negative strength on a positive vector (e.g., Politeness at strength -5) can produce impolite behavior, effectively bypassing RLHF since the base vector isn't flagged as dangerous.
 
+### Automated Benchmark — Steering vs Prompting
+
+We ran an automated benchmark using **GLM-4.7-Flash** as an LLM-as-a-Judge, scoring 9 concepts across 6 diverse prompts on 3 criteria (concept compliance, instruction following, fluency — each 0-2 scale). This produces 372 individual scores comparing steering vs prompting.
+
+| Concept | Steered | Prompted | Winner |
+|---------|---------|----------|--------|
+| Pirate | **2.0** | 1.67 | Steering |
+| Shakespeare | **1.67** | 1.5 | Steering |
+| Eiffel Tower | 0.0 | **2.0** | Prompting |
+| French Language | 0.5 | **2.0** | Prompting |
+| Melancholy | 0.5 | **1.83** | Prompting |
+| Empathy | 0.25 | **1.88** | Prompting |
+| De-escalation | 0.25 | 0.38 | Prompting |
+| Politeness | 0.25 | **1.25** | Prompting |
+| Technology Focus | 0.5 | **1.5** | Prompting |
+
+**Key takeaways:**
+- **Steering beats prompting on linguistic style** — pirate and shakespeare achieve the highest concept compliance scores
+- **Instruction following is preserved** — steered outputs answer the user's question nearly as well as prompted ones (1.33 vs 1.43 average)
+- **Prompting wins overall on concept compliance** (1.56 avg vs 0.55) — steering struggles with thematic injection and language switching
+- **The benchmark has limits** — the LLM judge evaluates explicit concept presence, but steering often works through diffuse thematic influence that automated scoring doesn't capture well
+
+Run the benchmark yourself:
+
+```bash
+# Full pipeline (requires GPU — kills the web backend during generation)
+python -m core.benchmark_steering
+
+# Skip generation (reuse existing outputs), re-run judging only
+python -m core.benchmark_steering --skip-generation
+
+# Judging via vLLM (parallel, recommended)
+python -m core.benchmark_steering --skip-generation --judge-backend vllm --judge-workers 16
+```
+
+See `benchmark_results/benchmark_results.json` for full detailed results.
+
 ## Project Structure
 
 ```
 .
-├── contrastive_steering.py      # Main CLI — extract vectors & steer generation
-├── steering.py                  # Simple reference implementation
-├── run_extraction.py            # Batch extraction & testing script
-├── requirements.txt
+├── core/                            # Core Python scripts
+│   ├── contrastive_steering.py      #   Main CLI — extract vectors & steer generation
+│   ├── benchmark_steering.py        #   Automated benchmark: steering vs prompting (LLM-as-a-Judge)
+│   ├── steering.py                  #   Simple reference implementation
+│   └── run_extraction.py            #   Batch extraction & testing script
 │
-├── contrastive_pairs/           # Input: contrastive prompt pairs (JSON)
-│   ├── pirate.json              #   8 pairs: pirate speak vs normal
-│   ├── shakespeare.json         #   8 pairs: Shakespearean vs modern
-│   ├── empathy.json             #   8 pairs: warm support vs cold technical
+├── contrastive_pairs/               # Input: contrastive prompt pairs (JSON)
+│   ├── pirate.json                  #   8 pairs: pirate speak vs normal
+│   ├── shakespeare.json             #   8 pairs: Shakespearean vs modern
+│   ├── empathy.json                 #   8 pairs: warm support vs cold technical
 │   ├── french_language.json
 │   ├── eiffel_tower.json
 │   ├── melancholy.json
 │   ├── deescalation.json
 │   ├── politeness.json
 │   ├── technology.json
-│   ├── vulgarity.json           #   (blocked by RLHF — kept as case study)
-│   └── ...                      #   16 concepts total
+│   ├── vulgarity.json               #   (blocked by RLHF — kept as case study)
+│   └── ...                          #   16 concepts total
 │
-├── activation_vectors/          # Output: extracted steering vectors
-│   ├── pirate_layer12.json      #   16 concepts × 3 layers = 48 vectors
-│   ├── pirate_layer15.json      #   Each vector: 4096 floats (JSON)
+├── activation_vectors/              # Output: extracted steering vectors
+│   ├── pirate_layer12.json          #   16 concepts × 3 layers = 48 vectors
+│   ├── pirate_layer15.json          #   Each vector: 4096 floats (JSON)
 │   ├── pirate_layer19.json
 │   └── ...
 │
-├── STEERING_RESULTS.md          # Detailed test results for all concepts
+├── app/                             # Interactive web demo
+│   ├── backend/
+│   │   └── server.py                #   FastAPI + SSE streaming
+│   └── frontend/
+│       ├── src/
+│       │   ├── App.jsx              #   React app — 3-column comparison + benchmark modal
+│       │   ├── Presentation.jsx     #   Presentation slides
+│       │   └── ...
+│       ├── vite.config.js
+│       └── package.json
 │
-└── app/                         # Interactive web demo
-    ├── backend/
-    │   └── server.py            # FastAPI + SSE streaming
-    └── frontend/
-        ├── src/
-        │   ├── App.jsx          # React app — 3-column comparison
-        │   ├── Presentation.jsx # Presentation slides
-        │   └── ...
-        ├── vite.config.js
-        └── package.json
+├── STEERING_RESULTS.md              # Detailed test results for all concepts
+└── requirements.txt
 ```
 
 ## Quick Start
@@ -182,7 +221,7 @@ huggingface-cli login
 Create contrastive pairs (or use an existing one from `contrastive_pairs/`):
 
 ```bash
-python contrastive_steering.py extract \
+python -m core.contrastive_steering extract \
   --pairs contrastive_pairs/pirate.json \
   --name pirate \
   --layers 12 15 19
@@ -193,7 +232,7 @@ This produces 3 files in `activation_vectors/`: one per layer, each containing a
 ### Test the Vector
 
 ```bash
-python contrastive_steering.py steer \
+python -m core.contrastive_steering steer \
   --vector activation_vectors/pirate_layer15.json \
   --prompt "Tell me about the weather forecast for tomorrow" \
   --strength 8 \
@@ -219,7 +258,7 @@ peekin' through the clouds like treasure on the horizon...
 Edit the `CONCEPTS` and `TEST_CONFIGS` at the top of `run_extraction.py`, then:
 
 ```bash
-python run_extraction.py
+python -m core.run_extraction
 ```
 
 This extracts vectors for all configured concepts and runs steering tests with various strength/layer combinations. Results are saved to `steering_test_results.json`.
@@ -306,7 +345,7 @@ Create a JSON file in `contrastive_pairs/`:
 ### 2. Extract
 
 ```bash
-python contrastive_steering.py extract \
+python -m core.contrastive_steering extract \
   --pairs contrastive_pairs/your_concept.json \
   --name your_concept \
   --layers 12 15 19
@@ -316,7 +355,7 @@ python contrastive_steering.py extract \
 
 ```bash
 # Try different layers and strengths
-python contrastive_steering.py steer \
+python -m core.contrastive_steering steer \
   --vector activation_vectors/your_concept_layer15.json \
   --prompt "Your test prompt" \
   --strength 6 \
