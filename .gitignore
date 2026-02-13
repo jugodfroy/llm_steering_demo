@@ -13,7 +13,6 @@ dist-ssr/
 
 # Generated test results
 steering_test_results*.json
-benchmark_results/
 
 # Environment / secrets
 .env
